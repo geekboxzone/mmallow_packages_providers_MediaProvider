@@ -28,6 +28,8 @@ import android.util.Log;
 public class MtpReceiver extends BroadcastReceiver {
     private static final String TAG = MtpReceiver.class.getSimpleName();
     private static final boolean DEBUG = false;
+    private static boolean lastMtpEnabled = false;
+    private static boolean lastPtpEnabled = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -51,6 +53,22 @@ public class MtpReceiver extends BroadcastReceiver {
         boolean unlocked = extras.getBoolean(UsbManager.USB_DATA_UNLOCKED);
         // Start MTP service if USB is connected and either the MTP or PTP function is enabled
         if (connected && (mtpEnabled || ptpEnabled)) {
+            if (DEBUG) {
+                Log.d(TAG, "mtpEnabled= " + mtpEnabled + " lastMtpEnabled="
+                        + lastMtpEnabled + " ptpEnabled=" + ptpEnabled + " lastPtpEnabled=" + lastPtpEnabled);
+            }
+            if (((lastMtpEnabled != mtpEnabled)&&(lastPtpEnabled !=ptpEnabled)) || (mtpEnabled&&connected)) {
+                boolean status = context.stopService(new Intent(context, MtpService.class));
+                if (DEBUG) { Log.d(TAG, "handleUsbState stopService status=" + status); }
+                // tell MediaProvider MTP is disconnected so it can unbind from the service
+                context.getContentResolver().delete(Uri.parse(
+                        "content://media/none/mtp_connected"), null, null);
+            }
+
+
+            lastMtpEnabled = mtpEnabled;
+            lastPtpEnabled = ptpEnabled;
+
             intent = new Intent(context, MtpService.class);
             intent.putExtra(UsbManager.USB_DATA_UNLOCKED, unlocked);
             if (ptpEnabled) {
