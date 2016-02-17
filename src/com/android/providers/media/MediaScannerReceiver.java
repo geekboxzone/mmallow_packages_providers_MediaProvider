@@ -57,13 +57,18 @@ public class MediaScannerReceiver extends BroadcastReceiver {
                     path = externalStoragePath + path.substring(legacyPath.length());
                 }
 
-                Log.d(TAG, "action: " + action + " path: " + path);
+                String packageName = intent.getStringExtra("package");
+                Log.d(TAG, "action: " + action + " path: " + path + " externalStoragePath:"+externalStoragePath);
                 if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
                     // scan whenever any volume is mounted
                     scan(context, MediaProvider.EXTERNAL_VOLUME);
                 } else if (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE.equals(action) &&
                         path != null && path.startsWith(externalStoragePath + "/")) {
                     scanFile(context, path);
+                } else if ( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE.equals(action) &&
+                        "RockExplorer".equals(packageName)) {
+                    scan(context, MediaProvider.INTERNAL_VOLUME);
+                    scan(context, MediaProvider.EXTERNAL_VOLUME);
                 }
             }
         }
