@@ -49,6 +49,7 @@
         <receiver android:name="MediaScannerReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+		<action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
