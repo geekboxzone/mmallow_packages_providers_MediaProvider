@@ -2303,7 +2303,16 @@ public class MediaProvider extends ContentProvider {
                 c.addRow(new String[] {mMediaScannerVolume});
                 return c;
             }
-        }
+        }else if(table == VIDEO_MEDIA && "true".equals(android.os.SystemProperties.get("ro.config.low_ram", "false")) && (!"true".equals(android.os.SystemProperties.get("sys.cts_gts.status", "false")))){
+	  String[] pkgs = getContext().getPackageManager().getPackagesForUid(Binder.getCallingUid());
+	  boolean isPhoto = false;
+	  if (pkgs != null && pkgs.length > 0){
+  	     List<String> list = java.util.Arrays.asList(pkgs);
+ 	     Log.v(TAG, Binder.getCallingPid()+"   query vidio :" +Binder.getCallingUid()  + ", uid ");
+	     if(list.contains("com.google.android.apps.photos") || list.contains("com.google.android.apps.photos"))
+ 	        return null;
+	  }
+	}
 
         // Used temporarily (until we have unique media IDs) to get an identifier
         // for the current sd card, so that the music app doesn't have to use the
