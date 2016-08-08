@@ -39,6 +39,7 @@ public class MediaScannerReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         final Uri uri = intent.getData();
+		String packageName = intent.getStringExtra("package");
         if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
             // Scan both internal and external storage
             scan(context, MediaProvider.INTERNAL_VOLUME);
@@ -57,6 +58,8 @@ public class MediaScannerReceiver extends BroadcastReceiver {
 				scan(context, MediaProvider.EXTERNAL_VOLUME);
 			}
 	        }
+	}else if(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE.equals(action) && "Documents".equals(packageName)){
+		scan(context, MediaProvider.EXTERNAL_VOLUME);
 	}else {
             if (uri != null && uri.getScheme() != null && uri.getScheme().equals("file")) {
                 // handle intents related to external storage
@@ -74,8 +77,6 @@ public class MediaScannerReceiver extends BroadcastReceiver {
                     path = externalStoragePath + path.substring(legacyPath.length());
                 }
 
-                String packageName = intent.getStringExtra("package");
-                Log.d(TAG, "action: " + action + " path: " + path + " externalStoragePath:"+externalStoragePath);
                 if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
                     // scan whenever any volume is mounted
                     scan(context, MediaProvider.EXTERNAL_VOLUME);
