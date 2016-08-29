@@ -2303,7 +2303,7 @@ public class MediaProvider extends ContentProvider {
                 c.addRow(new String[] {mMediaScannerVolume});
                 return c;
             }
-        }else if(table == VIDEO_MEDIA && "true".equals(android.os.SystemProperties.get("ro.config.low_ram", "false")) && (!"true".equals(android.os.SystemProperties.get("sys.cts_gts.status", "false")))){
+        }else if(table == VIDEO_MEDIA && "true".equals(android.os.SystemProperties.get("ro.config.low_ram", "false")) && (!"true".equals(android.os.SystemProperties.get("sys.cts_gts.status", "false"))) || "zygote64_32".equals(android.os.SystemProperties.get("ro.zygote","zygote32_32"))){
 	  String[] pkgs = getContext().getPackageManager().getPackagesForUid(Binder.getCallingUid());
 	  boolean isPhoto = false;
 	  if (pkgs != null && pkgs.length > 0){
